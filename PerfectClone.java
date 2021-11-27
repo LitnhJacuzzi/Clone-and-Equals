@@ -13,7 +13,6 @@ public class PerfectClone
 {
 	private static IArrayList clonedObjects = new IArrayList();
 	private static IArrayList clonedRetObjects = new IArrayList();
-	private static Object fieldTargetValue = null;
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
@@ -36,6 +35,9 @@ public class PerfectClone
 		if(target.getClass() == Object.class)
 			return (T) new Object();
 		
+		if(isPackagingClass(target.getClass()))
+			return clonePackagingClassObject(target);
+		
 		int index = clonedObjects.indexOf(target);
 		if(index != -1) return (T) clonedRetObjects.get(index);
 		
@@ -51,7 +53,7 @@ public class PerfectClone
 			
 			clonedObjects.add(target);
 			clonedRetObjects.add(ret);
-				
+			
 			for(int i = 0; i < Array.getLength(target); i++) {
 				Array.set(ret, i, clone0(Array.get(target, i), Array.get(ret, i)));
 			}
@@ -82,8 +84,7 @@ public class PerfectClone
 			try {
 				if(!(Modifier.isStatic(field.getModifiers()))) {
 					field.setAccessible(true);
- 					fieldTargetValue = field.get(target);
-					field.set(ret, clone0(fieldTargetValue, field.get(ret)));
+					field.set(ret, clone0(field.get(target), field.get(ret)));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -103,6 +104,31 @@ public class PerfectClone
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <T> T clonePackagingClassObject(T target) {
+		if(target.getClass() == String.class) {
+			return (T) String.valueOf(((String) target).toCharArray());
+		}else if(target.getClass() == Character.class) {
+			return (T) Character.valueOf(((Character) target).charValue());
+		}else if(target.getClass() == Boolean.class) {
+			return (T) Boolean.valueOf(((Boolean) target).booleanValue());
+		}else if(target.getClass() == Byte.class) {
+			return (T) Byte.valueOf(((Byte) target).byteValue());
+		}else if(target.getClass() == Short.class) {
+			return (T) Short.valueOf(((Short) target).shortValue());
+		}else if(target.getClass() == Integer.class) {
+			return (T) Integer.valueOf(((Integer) target).intValue());
+		}else if(target.getClass() == Long.class) {
+			return (T) Long.valueOf(((Long) target).longValue());
+		}else if(target.getClass() == Float.class) {
+			return (T) Float.valueOf(((Float) target).floatValue());
+		}else if(target.getClass() == Double.class) {
+			return (T) Double.valueOf(((Double) target).doubleValue());
+		}
+		
 		return null;
 	}
 	
@@ -129,14 +155,16 @@ public class PerfectClone
 	}
 	
 	private static boolean canDirectlyClone(Class<?> targetClass) {
-		if(targetClass.isPrimitive() || (targetClass == String.class) || 
-				(targetClass == Class.class) || (targetClass == Module.class) ||
-				(targetClass.isEnum()) || (targetClass == Character.class) ||
+		return (targetClass.isPrimitive() || (targetClass == Class.class) || 
+				(targetClass == Module.class) || (targetClass.isEnum()));
+	}
+	
+	private static boolean isPackagingClass(Class<?> targetClass) {
+		return ((targetClass == String.class) || (targetClass == Character.class) ||
 				(targetClass == Boolean.class) || (targetClass == Byte.class) ||
-				(targetClass == Integer.class) || (targetClass == Long.class) ||
-				(targetClass == Float.class) || (targetClass == Double.class))
-			return true;
-		return false;
+				(targetClass == Short.class) || (targetClass == Integer.class) || 
+				(targetClass == Long.class) || (targetClass == Float.class) || 
+				(targetClass == Double.class));
 	}
 	
 	/**
