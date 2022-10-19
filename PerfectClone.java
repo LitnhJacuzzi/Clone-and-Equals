@@ -44,7 +44,7 @@ public class PerfectClone
 			if((ret == null) || (ret.getClass() != target.getClass()) || (Array.getLength(target) != Array.getLength(ret)))
 				ret = (T) Array.newInstance(target.getClass().getComponentType(), Array.getLength(target));
 			
-			if(Array.getLength(target) == 0 && Array.getLength(ret) == 0) return (T) ret;
+			if(Array.getLength(target) == 0) return (T) ret;
 			
 			clonedObjects.put(target, ret);
 			
