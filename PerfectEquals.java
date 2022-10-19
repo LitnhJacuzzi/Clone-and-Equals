@@ -26,13 +26,17 @@ public class PerfectEquals
 		
 		if(comparedObjects.indexOf(o1) != -1) return true;
 		
+		if(o1 == o2) return false;
+		
 		if(o1.getClass().isArray()) {
-			if(Array.getLength(o1) != Array.getLength(o2)) return false;
+			if(Array.getLength(o1) != Array.getLength(o2)) 
+				return false;
 			
 			comparedObjects.add(o1);
 			
 			for(int i = 0; i < Array.getLength(o1); i++) {
-				if(!equals(Array.get(o1, i), Array.get(o2, i))) return false;
+				if(!equals(Array.get(o1, i), Array.get(o2, i)))
+					return false;
 			}
 			
 			return true;
@@ -52,7 +56,8 @@ public class PerfectEquals
 			try {
 				if(!Modifier.isStatic(field.getModifiers())) {
 					field.setAccessible(true);
-					if(!equals(field.get(o1), field.get(o2))) return false;
+					if(!equals(field.get(o1), field.get(o2))) 
+						return false;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -63,17 +68,18 @@ public class PerfectEquals
 	}
 	
 	private static boolean canDirectlyCompare(Class<?> targetClass) {
-		if(targetClass.isPrimitive() || (targetClass == String.class) || (targetClass == Class.class) ||
-				(targetClass.isEnum()))
+		if(targetClass.isPrimitive() || (targetClass == Module.class) || 
+				(targetClass == Class.class) || (targetClass.isEnum()))
 			return true;
 		return false;
 	}
 	
 	private static boolean isPackagingClass(Class<?> targetClass) {
-		if((targetClass == Character.class) ||
-				(targetClass == Boolean.class) || (targetClass == Byte.class) ||
-				(targetClass == Integer.class) || (targetClass == Long.class) ||
-				(targetClass == Float.class) || (targetClass == Double.class))
+		if((targetClass == Character.class) ||(targetClass == Character.class) || 
+				(targetClass == Boolean.class) || (targetClass == Byte.class) || 
+				(targetClass == Short.class) || (targetClass == Integer.class) || 
+				(targetClass == Long.class) || (targetClass == Float.class) || 
+				(targetClass == Double.class))
 			return true;
 		return false;
 	}
