@@ -6,18 +6,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.IdentityHashMap;
 
 import sun.misc.Unsafe;
 
 public class PerfectClone 
 {
-	private static IArrayList clonedObjects = new IArrayList();
-	private static IArrayList clonedRetObjects = new IArrayList();
+	private static IdentityHashMap<Object, Object> clonedObjects = new IdentityHashMap<>();
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
 		clonedObjects.clear();
-		clonedRetObjects.clear();
 		return clone0(target, null);
 	}
 	
@@ -38,21 +37,16 @@ public class PerfectClone
 		if(isPackagingClass(target.getClass()))
 			return clonePackagingClassObject(target);
 		
-		int index = clonedObjects.indexOf(target);
-		if(index != -1) return (T) clonedRetObjects.get(index);
+		if(clonedObjects.get(target) != null) 
+			return (T) clonedObjects.get(target);
 		
 		if(target.getClass().isArray()) {
-			if(ret != null) {
-				if(ret.getClass() != target.getClass())
-					ret = (T) Array.newInstance(target.getClass().getComponentType(), Array.getLength(target));
-			}else {
+			if((ret == null) || (ret.getClass() != target.getClass()) || Array.getLength(target) != Array.getLength(ret))
 				ret = (T) Array.newInstance(target.getClass().getComponentType(), Array.getLength(target));
-			}
 			
-			if(Array.getLength(target) == 0) return (T) ret;
+			if(Array.getLength(target) == 0 && Array.getLength(ret) == 0) return (T) ret;
 			
-			clonedObjects.add(target);
-			clonedRetObjects.add(ret);
+			clonedObjects.put(target, ret);
 			
 			for(int i = 0; i < Array.getLength(target); i++) {
 				Array.set(ret, i, clone0(Array.get(target, i), Array.get(ret, i)));
@@ -69,8 +63,7 @@ public class PerfectClone
 			ret = (T) instantiateObject(target.getClass());
 		}
 		
-		clonedObjects.add(target);
-		clonedRetObjects.add(ret);
+		clonedObjects.put(target, ret);
 		
 		ArrayList<Field> fields = new ArrayList<Field>();
 		Class<?> iterator = target.getClass();
@@ -148,7 +141,7 @@ public class PerfectClone
 			Method addOpens = Module.class.getDeclaredMethod("implAddExportsOrOpens", 
 					String.class, Module.class, boolean.class, boolean.class);
 			addOpens.setAccessible(true);
-			addOpens.invoke(targetClass.getModule(), targetClass.getPackageName(), PerfectClone.class.getModule(), true, true);
+			addOpens.invoke(targetClass.getModule(), targetClass.getPackageName(), PerfectClone2.class.getModule(), true, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -165,26 +158,5 @@ public class PerfectClone
 				(targetClass == Short.class) || (targetClass == Integer.class) || 
 				(targetClass == Long.class) || (targetClass == Float.class) || 
 				(targetClass == Double.class));
-	}
-	
-	/**
-	 * I overrode the {@code indexOf(Object)} method because this method in ArrayList is not proper(the {@code equals()} method should not be used here).
-	 */
-	private static class IArrayList extends ArrayList<Object>
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 962042845135067366L;
-
-		@Override
-		public int indexOf(Object o) {
-			for(int i = 0 ; i < size(); i++) {
-				if(o == get(i)) {
-					return i;
-				}
-			}
-			return -1;
-		}
 	}
 }
