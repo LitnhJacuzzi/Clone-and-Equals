@@ -1,3 +1,7 @@
+/* 
+ * Copyright (c) 2023, LitnhJacuzzi. All rights reserved.
+ */
+
 package equals;
 
 import java.lang.reflect.Array;
