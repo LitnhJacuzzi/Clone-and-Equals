@@ -2,11 +2,15 @@
 This project implements perfect clone and perfect equals.
 
 # Usage
-Clone an object:
+## Clone an object:
 ```java
 <AnyType> clone = PerfectClone.clone(o); // o is the object to be cloned
 ```
-Determine whether two objects are equal:
+If you already have or are able to get an instance of which the type is the same as the object to be cloned, use the method below instead.  
+```java
+<AnyType> clone = PerfectClone.clone(o, init); // o.getClass() == init.getClass()
+```
+## Determine whether two objects are equal:
 ```java
 boolean isEquals = PerfectEquals.equals(o1, o2); // o1, o2 are the objects to be compared.
 ```
