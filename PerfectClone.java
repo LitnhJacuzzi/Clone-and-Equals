@@ -60,7 +60,7 @@ public class PerfectClone
 		}
 		
 		if(ret != null) {
-			if(ret.getClass() != target.getClass()) {
+			if(ret.getClass() != target.getClass() || ret == target) {
 				ret = (T) instantiateObject(target.getClass());
 			}
 		}else {
