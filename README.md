@@ -15,7 +15,7 @@ boolean isEquals = PerfectEquals.equals(o1, o2); // o1, o2 are the objects to be
 ## Clone ##
 The Clone implementation is based on reflection and designed with absolute "copy standard", which makes all reference type objects associated with the original object EXACTLY the same as the copy but have different memory space, it means, the copy have the same memory data as the original one and all pointers(of ref-type fields) of the copy are pointed to the correct copied instances. This is equivalent to memory replication.
 ## Equals ##
-The Equals implementation is based on reflection and has a ABSOLUTELY strict standard. In short, an objects must equivalent to another's memory replication.  
+The Equals implementation is based on reflection and has a ABSOLUTELY strict standard. In short, an objects must be equivalent to another's memory replication.  
 For example, the following case will make this method return false:  
 `o1`: Type=A,Fields=[B b1,B b2]..., b1 points to an instance B1(Type=B...), b2 points to B1.  
 `o2`: Type=A,Fields=[B b1,B b2]..., b1 points to an instance B2(equals to B1), b2 points to an instance B3.  
