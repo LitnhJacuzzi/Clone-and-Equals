@@ -9,7 +9,7 @@ import java.util.IdentityHashMap;
 
 public class PerfectEquals 
 {
-	private static IdentityHashMap<Object, Object> comparedObjects = new IdentityHashMap<>();
+	private IdentityHashMap<Object, Object> comparedObjects = new IdentityHashMap<>();
 	
 	public static <T, U> boolean equals(T o1, U o2) {
 		return new PerfectEquals().equals0(o1, o2);
