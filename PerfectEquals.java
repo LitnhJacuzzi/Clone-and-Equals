@@ -2,53 +2,55 @@ package equals;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import clone.PerfectClone;
+import java.util.IdentityHashMap;
 
 public class PerfectEquals 
 {
-	private static IArrayList comparedObjects = new IArrayList();
+	private static IdentityHashMap<Object, Object> comparedObjects = new IdentityHashMap<>();
 	
 	public static <T, U> boolean equals(T o1, U o2) {
+		return new PerfectEquals().equals0(o1, o2);
+	}
+	
+	private <T, U> boolean equals0(T o1, U o2) {
 		if(o1 == null || o2 == null) return (o1 == o2);
-		
+
 		if(o1.getClass() != o2.getClass()) return false;
-		
+
 		if(canDirectlyCompare(o1.getClass())) return (o1 == o2);
 		
 		if(isPackagingClass(o1.getClass())) return o1.equals(o2);
 		
-		if(o1.getClass() == Object.class) return true;
-		
-		if(comparedObjects.indexOf(o1) != -1) return true;
-		
 		if(o1 == o2) return false;
+
+		if(o1.getClass() == Object.class) return true;
+
+		if(comparedObjects.containsKey(o1)) return comparedObjects.get(o1) == o2;
 		
 		if(o1.getClass().isArray()) {
 			if(Array.getLength(o1) != Array.getLength(o2)) 
 				return false;
 			
-			comparedObjects.add(o1);
+			comparedObjects.put(o1, o2);
 			
 			for(int i = 0; i < Array.getLength(o1); i++) {
-				if(!equals(Array.get(o1, i), Array.get(o2, i)))
+				if(!equals0(Array.get(o1, i), Array.get(o2, i)))
 					return false;
 			}
 			
 			return true;
 		}
 		
-		comparedObjects.add(o1);
+		comparedObjects.put(o1, o2);
 		
 		ArrayList<Field> fields = new ArrayList<Field>();
 		Class<?> iterator = o1.getClass();
-		hackPackage(iterator);
+//		hackPackage(iterator); For JDK 9 ~ 15.
 		do {
-			hackPackage(iterator);
+//			hackPackage(iterator); For JDK 9 ~ 15.
 			fields.addAll(Arrays.asList(iterator.getDeclaredFields()));
 		}while((iterator = iterator.getSuperclass()) != Object.class);
 		
@@ -56,7 +58,7 @@ public class PerfectEquals
 			try {
 				if(!Modifier.isStatic(field.getModifiers())) {
 					field.setAccessible(true);
-					if(!equals(field.get(o1), field.get(o2))) 
+					if(!equals0(field.get(o1), field.get(o2))) 
 						return false;
 				}
 			} catch (Exception e) {
@@ -68,7 +70,7 @@ public class PerfectEquals
 	}
 	
 	private static boolean canDirectlyCompare(Class<?> targetClass) {
-		if(targetClass.isPrimitive() || (targetClass == Module.class) || 
+		if(targetClass.isPrimitive() || /*(targetClass == Module.class) For JDK 9 ~ 15. ||*/ 
 				(targetClass == Class.class) || (targetClass.isEnum()))
 			return true;
 		return false;
@@ -84,6 +86,8 @@ public class PerfectEquals
 		return false;
 	}
 	
+	/*
+	 * For JDK 9 ~ 15.
 	private static void hackPackage(Class<?> targetClass) {
 		try {
 			Method addOpens = Module.class.getDeclaredMethod("implAddExportsOrOpens", 
@@ -94,22 +98,5 @@ public class PerfectEquals
 			e.printStackTrace();
 		}
 	}
-	
-	private static class IArrayList extends ArrayList<Object>
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 962042845135067366L;
-
-		@Override
-		public int indexOf(Object o) {
-			for(int i = 0 ; i < size(); i++) {
-				if(o == get(i)) {
-					return i;
-				}
-			}
-			return -1;
-		}
-	}
+	*/
 }
