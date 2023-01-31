@@ -81,7 +81,7 @@ public class PerfectEquals
 	}
 	
 	private static boolean isPackagingClass(Class<?> targetClass) {
-		if((targetClass == Character.class) ||(targetClass == Character.class) || 
+		if((targetClass == String.class) || (targetClass == Character.class) || 
 				(targetClass == Boolean.class) || (targetClass == Byte.class) || 
 				(targetClass == Short.class) || (targetClass == Integer.class) || 
 				(targetClass == Long.class) || (targetClass == Float.class) || 
