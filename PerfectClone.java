@@ -23,6 +23,10 @@ public class PerfectClone
 		return new PerfectClone().clone0(target, null);
 	}
 	
+	public static <T> T clone(T target, T init) {
+		return new PerfectClone().clone0(target, init);
+	}
+	
 	/**
 	 * Add {@code ret} parameter to reduce workload.
 	 */
