@@ -16,7 +16,7 @@ public class PerfectClone
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
-		return new PerfectClone2().clone0(target, null);
+		return new PerfectClone().clone0(target, null);
 	}
 	
 	/**
