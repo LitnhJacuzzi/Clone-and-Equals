@@ -16,15 +16,14 @@ public class PerfectClone
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
-		clonedObjects.clear();
-		return clone0(target, null);
+		return new PerfectClone2().clone0(target, null);
 	}
 	
 	/**
 	 * Add {@code ret} parameter to reduce workload.
 	 */
 	@SuppressWarnings("unchecked")
-	private static <T> T clone0(T target, Object ret) {
+	private <T> T clone0(T target, Object ret) {
 		if(target == null)
 			return null;
 		
@@ -37,8 +36,9 @@ public class PerfectClone
 		if(isPackagingClass(target.getClass()))
 			return clonePackagingClassObject(target);
 		
-		if(clonedObjects.get(target) != null) 
-			return (T) clonedObjects.get(target);
+		Object clonedObject = clonedObjects.get(target);
+		if(clonedObject != null) 
+			return (T) clonedObject;
 		
 		if(target.getClass().isArray()) {
 			if((ret == null) || (ret.getClass() != target.getClass()) || (Array.getLength(target) != Array.getLength(ret)))
@@ -67,9 +67,9 @@ public class PerfectClone
 		
 		ArrayList<Field> fields = new ArrayList<Field>();
 		Class<?> iterator = target.getClass();
-		hackPackage(iterator);
+//		hackPackage(iterator); For JDK 9 ~ 15.
 		do {
-			hackPackage(iterator);
+//			hackPackage(iterator); For JDK 9 ~ 15.
 			fields.addAll(Arrays.asList(iterator.getDeclaredFields()));
 		}while((iterator = iterator.getSuperclass()) != Object.class);
 
@@ -136,6 +136,8 @@ public class PerfectClone
 		return null;
 	}
 	
+	/*
+	 * For JDK 9 ~ 15.
 	private static void hackPackage(Class<?> targetClass) {
 		try {
 			Method addOpens = Module.class.getDeclaredMethod("implAddExportsOrOpens", 
@@ -146,10 +148,11 @@ public class PerfectClone
 			e.printStackTrace();
 		}
 	}
+	*/
 	
 	private static boolean canDirectlyClone(Class<?> targetClass) {
 		return (targetClass.isPrimitive() || (targetClass == Class.class) || 
-				(targetClass == Module.class) || (targetClass.isEnum()));
+				/*(targetClass == Module.class) For JDK 9 ~ 15. ||*/ (targetClass.isEnum()));
 	}
 	
 	private static boolean isPackagingClass(Class<?> targetClass) {
