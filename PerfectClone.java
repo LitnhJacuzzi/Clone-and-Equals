@@ -12,7 +12,7 @@ import sun.misc.Unsafe;
 
 public class PerfectClone 
 {
-	private static IdentityHashMap<Object, Object> clonedObjects = new IdentityHashMap<>();
+	private IdentityHashMap<Object, Object> clonedObjects = new IdentityHashMap<>();
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
