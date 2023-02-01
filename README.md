@@ -31,5 +31,5 @@ This example indicates that ref-type fields of two objects must have the same re
 # Customize Guide
 ## Clone
 Manually modify the specific fields which you want to be cloned in another way after cloning, you maybe use reflection if needed.
-# Equals
+## Equals
 Insert your own comparison rules in the special comparisons at the beginning of the method **properly.(You should consider their positions VERY carefully)**
