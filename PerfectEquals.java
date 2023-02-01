@@ -39,6 +39,7 @@ public class PerfectEquals
 				return false;
 			
 			comparedObjects.put(o1, o2);
+			comparedObjects.put(o2, o1);
 			
 			for(int i = 0; i < Array.getLength(o1); i++) {
 				if(!equals0(Array.get(o1, i), Array.get(o2, i)))
@@ -49,6 +50,7 @@ public class PerfectEquals
 		}
 		
 		comparedObjects.put(o1, o2);
+		comparedObjects.put(o2, o1);
 		
 		ArrayList<Field> fields = new ArrayList<Field>();
 		Class<?> iterator = o1.getClass();
