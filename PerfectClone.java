@@ -53,6 +53,7 @@ public class PerfectClone
 				ret = (T) Array.newInstance(target.getClass().getComponentType(), Array.getLength(target));
 			
 			clonedObjects.put(target, ret);
+			clonedObjects.put(ret, target);
 			
 			if(Array.getLength(target) == 0) return (T) ret;
 			
@@ -72,6 +73,7 @@ public class PerfectClone
 		}
 		
 		clonedObjects.put(target, ret);
+		clonedObjects.put(ret, target);
 		
 		ArrayList<Field> fields = new ArrayList<Field>();
 		Class<?> iterator = target.getClass();
