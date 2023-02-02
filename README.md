@@ -25,7 +25,7 @@ The Clone implementation is based on reflection and designed with absolute "copy
 The Equals implementation is based on reflection and has a ABSOLUTELY strict standard. In short, an objects must be equivalent to another's memory replication.  
 For example, the following case will make this method return false:  
 `o1`: Type=A,Fields=[B b1,B b2]..., b1 points to an instance B1(Type=B...), b2 points to B1.  
-`o2`: Type=A,Fields=[B b1,B b2]..., b1 points to an instance B2(equals to B1), b2 points to an instance B3.  
+`o2`: Type=A,Fields=[B b1,B b2]..., b1 points to an instance B2(equals to B1), b2 points to an instance B3(equals to B1 but **!=** B2).  
 This example indicates that ref-type fields of two objects must have the same reference paths.
 
 # Customize Guide
