@@ -153,7 +153,7 @@ public class PerfectClone
 			Method addOpens = Module.class.getDeclaredMethod("implAddExportsOrOpens", 
 					String.class, Module.class, boolean.class, boolean.class);
 			addOpens.setAccessible(true);
-			addOpens.invoke(targetClass.getModule(), targetClass.getPackageName(), PerfectClone2.class.getModule(), true, true);
+			addOpens.invoke(targetClass.getModule(), targetClass.getPackageName(), PerfectClone.class.getModule(), true, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
