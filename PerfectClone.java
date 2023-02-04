@@ -14,6 +14,9 @@ import java.util.IdentityHashMap;
 
 import sun.misc.Unsafe;
 
+/**
+ * @author LitnhJacuzzi
+ */
 public class PerfectClone 
 {
 	/**
@@ -116,16 +119,17 @@ public class PerfectClone
 		if(target.getClass() != init.getClass()) return false;
 
 		currentCloneType = CloneType.DIRECT;
-		if(canDirectlyClone(target.getClass())) return (target == init);
+		if(canDirectlyCloneOrCompare(target.getClass())) return (target == init);
 		
 		currentCloneType = CloneType.NEW;
 		if(isPackagingClass(target.getClass())) return target.equals(init);
-		if(target == init) return false;
-
+		
 		if(target.getClass() == Object.class) return true;
-
+		
 		currentCloneType = CloneType.EXISTED;
 		if(comparedObjects.containsKey(target)) return comparedObjects.get(target) == init;
+		
+		if(target == init) return true;
 		
 		if(target.getClass().isArray()) {
 			currentCloneType = CloneType.NEW;
