@@ -33,3 +33,6 @@ This example indicates that ref-type fields of two objects must have the same re
 Manually modify the specific fields which you want to be cloned in another way after cloning, you maybe use reflection if needed.
 ## Equals
 Insert your own comparison rules in the special comparisons at the beginning of the method **properly.(You should consider their positions VERY carefully)**
+
+# Future Optimization
+Considering that the equals method is much more effective than the clone method, the clone method may be mixed with the equals method to improve its performance. To be concrete, if the `init` object is almost the same as the `o`, only different sections will be cloned.(The equals method will work slightly different while cloning)
