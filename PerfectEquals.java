@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 
+/**
+ * @author LitnhJacuzzi
+ */
 public class PerfectEquals 
 {
 	private IdentityHashMap<Object, Object> comparedObjects = new IdentityHashMap<>();
@@ -24,15 +27,15 @@ public class PerfectEquals
 
 		if(o1.getClass() != o2.getClass()) return false;
 
-		if(canDirectlyCompare(o1.getClass())) return (o1 == o2);
+		if(canDirectlyCloneOrCompare(o1.getClass())) return (o1 == o2);
 		
 		if(isPackagingClass(o1.getClass())) return o1.equals(o2);
 		
-		if(o1 == o2) return false;
-
 		if(o1.getClass() == Object.class) return true;
 
 		if(comparedObjects.containsKey(o1)) return comparedObjects.get(o1) == o2;
+		
+		if(o1 == o2) return true;
 		
 		if(o1.getClass().isArray()) {
 			if(Array.getLength(o1) != Array.getLength(o2)) 
