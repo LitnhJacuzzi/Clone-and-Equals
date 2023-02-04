@@ -12,7 +12,8 @@ If you already have or are able to get an instance of which the type is the same
 ```
 **NOTE:** You are supposed to avoid cases that the original object's field tree have references to any instance in the initial object, it's against the rule of copy. The clone method will still make them "perfectly equal", only logically. For example:  
 `o`: Type=A,Fields=[A a...], a points to `init`(Type=A). The content of `init` is arbitrary.  
-And the result `init` will be: Type=A,[Fields=A a...], a points to `o`.
+And the result `init` will be: Type=A,[Fields=A a...], a points to `o`.  
+**Also Note:** Cloned object returned by the first method is **completely** isolated from the original one, while a field in the cloned object returned by the second method may point to the same ref-type instance as that in the original object points to.
 ## Determine whether two objects are equal:
 ```java
 boolean isEquals = PerfectEquals.equals(o1, o2); // o1, o2 are the objects to be compared.
