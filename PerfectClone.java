@@ -119,7 +119,7 @@ public class PerfectClone
 		if(target.getClass() != init.getClass()) return false;
 
 		currentCloneType = CloneType.DIRECT;
-		if(canDirectlyCloneOrCompare(target.getClass())) return (target == init);
+		if(canDirectlyClone(target.getClass())) return (target == init);
 		
 		currentCloneType = CloneType.NEW;
 		if(isPackagingClass(target.getClass())) return target.equals(init);
