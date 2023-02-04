@@ -34,5 +34,5 @@ Manually modify the specific fields which you want to be cloned in another way a
 ## Equals
 Insert your own comparison rules in the special comparisons at the beginning of the method **properly.(You should consider their positions VERY carefully)**
 
-# Future Optimization
+# Future Optimization(Implemented)
 Considering that the equals method is much more effective than the clone method, the clone method may be mixed with the equals method to improve its performance. To be concrete, if the `init` object is almost the same as the `o`, only different sections will be cloned.(The equals method will work slightly different while cloning)
