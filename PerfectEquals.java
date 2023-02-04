@@ -27,7 +27,7 @@ public class PerfectEquals
 
 		if(o1.getClass() != o2.getClass()) return false;
 
-		if(canDirectlyCloneOrCompare(o1.getClass())) return (o1 == o2);
+		if(canDirectlyCompare(o1.getClass())) return (o1 == o2);
 		
 		if(isPackagingClass(o1.getClass())) return o1.equals(o2);
 		
