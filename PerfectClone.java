@@ -16,7 +16,19 @@ import sun.misc.Unsafe;
 
 public class PerfectClone 
 {
+	/**
+	 * Used by {@code cloneWithInit()} method, determines how to clone the different content.<br>
+	 * {@code NEW} - If the different field need to be deep cloned.<br>
+	 * {@code DIRECT} - If the different field can be shallow cloned.<br>
+	 * {@code EXISTED} - If the different field's correct instance existed in mapped objects.
+	 */
+	private enum CloneType {
+		NEW, DIRECT, EXISTED
+	}
+	
 	private IdentityHashMap<Object, Object> clonedObjects = new IdentityHashMap<>();
+	private IdentityHashMap<Object, Object> comparedObjects = new IdentityHashMap<>();
+	private CloneType currentCloneType;
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
@@ -24,7 +36,8 @@ public class PerfectClone
 	}
 	
 	public static <T> T clone(T target, T init) {
-		return new PerfectClone().clone0(target, init);
+		new PerfectClone().clone0(target, init);
+		return init;
 	}
 	
 	/**
@@ -95,6 +108,91 @@ public class PerfectClone
 		}
 		
 		return (T) ret;
+	}
+	
+	private <T> boolean cloneWithInit(T target, T init) {
+		currentCloneType = CloneType.NEW;
+		if(target == null || init == null) return (target == init);
+		if(target.getClass() != init.getClass()) return false;
+
+		currentCloneType = CloneType.DIRECT;
+		if(canDirectlyClone(target.getClass())) return (target == init);
+		
+		currentCloneType = CloneType.NEW;
+		if(isPackagingClass(target.getClass())) return target.equals(init);
+		if(target == init) return false;
+
+		if(target.getClass() == Object.class) return true;
+
+		currentCloneType = CloneType.EXISTED;
+		if(comparedObjects.containsKey(target)) return comparedObjects.get(target) == init;
+		
+		if(target.getClass().isArray()) {
+			currentCloneType = CloneType.NEW;
+			if(Array.getLength(target) != Array.getLength(init)) 
+				return false;
+			
+			comparedObjects.put(target, init);
+			comparedObjects.put(init, target);
+			
+			for(int i = 0; i < Array.getLength(target); i++) {
+				Object targetCurrentValue = Array.get(target, i);
+				if(!cloneWithInit(targetCurrentValue, Array.get(init, i))) {
+					switch(currentCloneType) {
+						case NEW:
+							clonedObjects.clear();
+							Array.set(init, i, clone0(targetCurrentValue, null));
+							break;
+						case DIRECT:
+							Array.set(init, i, targetCurrentValue);
+							break;
+						case EXISTED:
+							Array.set(init, i, comparedObjects.get(targetCurrentValue));
+							break;
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		comparedObjects.put(target, init);
+		comparedObjects.put(init, target);
+		
+		ArrayList<Field> fields = new ArrayList<Field>();
+		Class<?> iterator = target.getClass();
+//		hackPackage(iterator); For JDK 9 ~ 15.
+		do {
+//			hackPackage(iterator); For JDK 9 ~ 15.
+			fields.addAll(Arrays.asList(iterator.getDeclaredFields()));
+		}while((iterator = iterator.getSuperclass()) != Object.class);
+		
+		for(Field field : fields) {
+			try {
+				if(!Modifier.isStatic(field.getModifiers())) {
+					field.setAccessible(true);
+					Object targetFieldValue = field.get(target);
+					if(!cloneWithInit(targetFieldValue, field.get(init))) {
+						switch(currentCloneType) {
+							case NEW:
+								clonedObjects.clear();
+								field.set(init, clone0(targetFieldValue, null));
+								break;
+							case DIRECT:
+								field.set(init, targetFieldValue);
+								break;
+							case EXISTED:
+								field.set(init, comparedObjects.get(targetFieldValue));
+								break;
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
 	}
 	
 	/**
