@@ -35,21 +35,21 @@ public class PerfectClone
 	private static Unsafe unsafe = hackUnsafe();
 	
 	public static <T> T clone(T target) {
-		return new PerfectClone().clone0(target, null);
+		return new PerfectClone().clone0(target);
 	}
 	
 	public static <T> T clone(T target, T init) {
 		PerfectClone pc = new PerfectClone();
 		if(!pc.cloneWithInit(target, init))
-			init = pc.clone0(target, null);
+			init = pc.clone0(target);
 		return init;
 	}
 	
-	/**
-	 * Add {@code ret} parameter to reduce workload.
-	 */
+	
 	@SuppressWarnings("unchecked")
-	private <T> T clone0(T target, Object ret) {
+	private <T> T clone0(T target) {
+		Object ret = null;
+		
 		if(target == null)
 			return null;
 		
@@ -67,28 +67,22 @@ public class PerfectClone
 			return (T) clonedObject;
 		
 		if(target.getClass().isArray()) {
-			if((ret == null) || (ret.getClass() != target.getClass()) || (Array.getLength(target) != Array.getLength(ret)))
-				ret = (T) Array.newInstance(target.getClass().getComponentType(), Array.getLength(target));
+			int targetLength = Array.getLength(target);
+			ret = (T) Array.newInstance(target.getClass().getComponentType(), targetLength);
 			
 			clonedObjects.put(target, ret);
 			clonedObjects.put(ret, target);
 			
-			if(Array.getLength(target) == 0) return (T) ret;
+			if(targetLength == 0) return (T) ret;
 			
-			for(int i = 0; i < Array.getLength(target); i++) {
-				Array.set(ret, i, clone0(Array.get(target, i), Array.get(ret, i)));
+			for(int i = 0; i < targetLength; i++) {
+				Array.set(ret, i, clone0(Array.get(target, i)));
 			}
 			
 			return (T) ret;
 		}
 		
-		if(ret != null) {
-			if(ret.getClass() != target.getClass() || ret == target) {
-				ret = (T) instantiateObject(target.getClass());
-			}
-		}else {
-			ret = (T) instantiateObject(target.getClass());
-		}
+		ret = (T) instantiateObject(target.getClass());
 		
 		clonedObjects.put(target, ret);
 		clonedObjects.put(ret, target);
@@ -105,7 +99,7 @@ public class PerfectClone
 			try {
 				if(!(Modifier.isStatic(field.getModifiers()))) {
 					field.setAccessible(true);
-					field.set(ret, clone0(field.get(target), field.get(ret)));
+					field.set(ret, clone0(field.get(target)));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -147,7 +141,7 @@ public class PerfectClone
 					switch(currentCloneType) {
 						case NEW:
 							clonedObjects.clear();
-							Array.set(init, i, clone0(targetCurrentValue, null));
+							Array.set(init, i, clone0(targetCurrentValue));
 							break;
 						case DIRECT:
 							Array.set(init, i, targetCurrentValue);
@@ -182,7 +176,7 @@ public class PerfectClone
 						switch(currentCloneType) {
 							case NEW:
 								clonedObjects.clear();
-								field.set(init, clone0(targetFieldValue, null));
+								field.set(init, clone0(targetFieldValue));
 								break;
 							case DIRECT:
 								field.set(init, targetFieldValue);
