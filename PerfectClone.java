@@ -39,7 +39,9 @@ public class PerfectClone
 	}
 	
 	public static <T> T clone(T target, T init) {
-		new PerfectClone().cloneWithInit(target, init);
+		PerfectClone pc = new PerfectClone();
+		if(!pc.cloneWithInit(target, init))
+			pc.clone0(target, init);
 		return init;
 	}
 	
