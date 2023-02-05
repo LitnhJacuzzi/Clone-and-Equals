@@ -45,10 +45,9 @@ public class PerfectClone
 		return init;
 	}
 	
-	
 	@SuppressWarnings("unchecked")
 	private <T> T clone0(T target) {
-		Object ret = null;
+		T ret = null;
 		
 		if(target == null)
 			return null;
@@ -73,13 +72,13 @@ public class PerfectClone
 			clonedObjects.put(target, ret);
 			clonedObjects.put(ret, target);
 			
-			if(targetLength == 0) return (T) ret;
+			if(targetLength == 0) return ret;
 			
 			for(int i = 0; i < targetLength; i++) {
 				Array.set(ret, i, clone0(Array.get(target, i)));
 			}
 			
-			return (T) ret;
+			return ret;
 		}
 		
 		ret = (T) instantiateObject(target.getClass());
@@ -106,7 +105,7 @@ public class PerfectClone
 			}
 		}
 		
-		return (T) ret;
+		return ret;
 	}
 	
 	private <T> boolean cloneWithInit(T target, T init) {
