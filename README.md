@@ -12,7 +12,7 @@ If you already have or are able to get an instance of which the type is the same
 ```
 **NOTE:** You are supposed to avoid cases that the original object's field tree have references to any instance in the initial object, it's against the rule of copy. The clone method will still make them "perfectly equal", only logically. For example:  
 `o`: Type=A,Fields=[A a...], a points to `init`(Type=A). The content of `init` is arbitrary.  
-And the result `init` will be: Type=A,[Fields=A a...], a points to `o`.  
+And the result `init` will be: Type=A,Fields=[A a...], a points to `o`.  
 **Also Note:** Cloned object returned by the first method is **completely** isolated from the original one, while a field in the cloned object returned by the second method may point to the same ref-type instance as that in the original object points to.
 ## Determine whether two objects are equal:
 ```java
@@ -32,7 +32,10 @@ This example indicates that ref-type fields of two objects must have the same re
 
 # Customize Guide
 ## Clone
-Manually modify the specific fields which you want to be cloned in another way after cloning, you maybe use reflection if needed.
+### Replace Serialization
+Add `if(!(target.getClass() instanceof Serializable))` after `if(target == null)` and throw `NotSerializableException`, then insert `!Modifier.isTransient(...)` at field judgement and link `!Modifier.isStatic(...)` with `&&`. It will work the same as Serialization and **8x** faster than Serialization.  
+### Skip custom immutable class
+Add your own classes to `canDirectlyClone(..)` method.
 ## Equals
 Insert your own comparison rules in the special comparisons at the beginning of the method **properly.(You should consider their positions VERY carefully)**
 
