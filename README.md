@@ -33,7 +33,7 @@ This example indicates that ref-type fields of two objects must have the same re
 # Customize Guide
 ## Clone
 ### Replace Serialization
-Add `if(!(target.getClass() instanceof Serializable))` after `if(target == null)` and throw `NotSerializableException`, then insert `!Modifier.isTransient(...)` at field judgement and link `!Modifier.isStatic(...)` with `&&`. It will work the same as Serialization and **8x faster** than Serialization.  
+Add `if(!(target instanceof Serializable))` after `if(target == null)` and throw `NotSerializableException`, then insert `!Modifier.isTransient(...)` at field judgement and link `!Modifier.isStatic(...)` with `&&`. It will work the same as Serialization and **8x faster** than Serialization.  
 ### Skip custom immutable classes
 Add your own classes to `canDirectlyClone(..)` method.
 ## Equals
