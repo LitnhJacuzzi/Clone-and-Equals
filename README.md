@@ -1,5 +1,5 @@
 # Clone and Equals
-This project implements perfect clone and perfect equals.
+This project implements perfect deep clone and perfect equals.
 
 # Usage
 ## Clone an object:
@@ -33,7 +33,7 @@ This example indicates that ref-type fields of two objects must have the same re
 # Customize Guide
 ## Clone
 ### Replace serialized cloning
-Add `if(!(target instanceof Serializable))` after `if(target == null)` and throw `NotSerializableException`, then insert `!Modifier.isTransient(...)` at field judgement and link `!Modifier.isStatic(...)` with `&&`. It will work the same as and **8x faster** than cloning with Serialization.  
+Add `if(!(target instanceof Serializable))` after `if(target == null)` and throw `NotSerializableException`, then insert `!Modifier.isTransient(...)` at field judgment and link `!Modifier.isStatic(...)` with `&&`. It will work the same as and **8x faster** than cloning with Serialization.  
 ### Skip custom immutable classes
 Add your own classes to `canDirectlyClone(...)` method.
 ## Equals
